@@ -16,13 +16,24 @@ class Frenetic
         if url['templated']
           tmpl = Addressable::Template.new url['href']
 
-          params = { id:params } unless params.is_a? Hash
+          if params && !params.is_a?(Hash)
+            params = infer_url_template_values tmpl, params
+          end
 
           tmpl.expand( params ).to_s
         else
           url['href']
         end
       end
+
+    private
+
+      def infer_url_template_values( tmpl, params )
+        key = tmpl.variables.first
+
+        { key => params }
+      end
+
     end
   end
 end
